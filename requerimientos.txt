@@ -1,0 +1,66 @@
+Con ayuda del siguiente test, vamos a medir tanto teóricamente tus habilidades como desarrollador backend:
+
+Objetivo:
+
+Evaluar las habilidades y conocimientos del candidato en las áreas clave del desarrollo backend.
+
+Estructura del test:
+
+El test se divide en tres secciones:
+
+Conocimientos teóricos (30%)
+Ejercicios prácticos (70%)
+Preguntas de afinidad cultural
+Sección 1: Conocimientos teóricos
+
+Esta sección evaluará los conocimientos teóricos que posee, describa brevemente cada uno de los siguientes puntos:
+
+Lenguajes de programación backend (por ejemplo, Python, Java, JavaScript, PHP)
+Bases de datos (por ejemplo, MySQL, PostgreSQL, MongoDB)
+Estructuras de datos y algoritmos
+Principios de SOLID
+API RESTful
+Pruebas unitarias
+Implementación de microservicios
+Seguridad en aplicaciones web
+Sección 2: Ejercicios prácticos
+
+Esta sección evaluará la capacidad del candidato para aplicar sus conocimientos teóricos a través de ejercicios prácticos. Para esto debes crear un repositorio en github realizando la siguiente actividad
+
+Diseñar y desarrollar una API RESTful con NESTJS y Mongo para una mensajería entre usuarios, el cual debe contener
+Login de usuario,
+Envío de mensaje a otro usuario
+Lectura de mensaje y marcado como leído.
+Filtrado de mensajes (Leídos, No leídos, destacados)
+Pruebas unitarias
+Nota: El repositorio debe ser facilitado para evaluación del mismo.
+
+
+
+Sección 3: Preguntas de afinidad cultural (opcional)
+
+Esta sección es opcional y tiene como objetivo evaluar si el candidato se ajusta a la cultura y valores de la empresa. Las preguntas podrían incluir:
+
+¿Cómo describes tu estilo de trabajo?
+¿Qué te motiva a trabajar como desarrollador backend?
+¿Cómo manejas el trabajo en equipo y la colaboración?
+¿Cómo te adaptas a nuevos desafíos y aprendes nuevas tecnologías?
+¿Qué aportas a un equipo de trabajo?
+Herramientas de evaluación
+
+El test se puede evaluar de diferentes maneras, como:
+
+Revisión manual del código por parte de un desarrollador experimentado
+Ejecución de pruebas unitarias automatizadas
+Utilización de herramientas de análisis de código estático
+Entrevista técnica con el candidato
+Criterios de evaluación
+
+Los criterios de evaluación se basarán en los siguientes aspectos:
+
+Corrección del código
+Eficiencia del código
+Legibilidad del código
+Capacidad para resolver problemas
+Habilidades de comunicación
+Actitud y motivación
