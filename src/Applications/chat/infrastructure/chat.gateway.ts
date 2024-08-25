@@ -5,12 +5,13 @@ import { validate } from "class-validator";
 
 import { ChatService } from "../applications";
 import { ChatMessageDto, NewChatDto, GetMessagesDto } from "../domain/";
+import { MarkMessageDto } from "../domain/dto/mark-message.dto";
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway implements OnModuleInit {
   @WebSocketServer()
   public server: Server;
-
+  readonly #logger = new Logger(ChatGateway.name);
   constructor(private readonly chatService: ChatService) {}
 
   public readonly onModuleInit = (): void => {
@@ -19,14 +20,14 @@ export class ChatGateway implements OnModuleInit {
         const token = socket.handshake?.auth?.token ?? socket.handshake?.headers?.token ?? "";
         const tokenInfo = await this.chatService.authClientFromToken(token);
         this.chatService.onClientConnected({ socketId: socket.id, userId: tokenInfo.id, rol: tokenInfo.rol });
-        Logger.log(`Client ${tokenInfo.id} is connected `);
+        this.#logger.log(`Client ${tokenInfo.id} is connected `);
 
         socket.on("disconnect", () => {
           this.chatService.onClientDisconnected(tokenInfo.id);
-          Logger.log(`Client ${tokenInfo.id} disconnected `);
+          this.#logger.log(`Client ${tokenInfo.id} disconnected `);
         });
       } catch (error) {
-        Logger.error(error);
+        this.#logger.error(error);
         socket.disconnect();
       }
     });
@@ -38,9 +39,9 @@ export class ChatGateway implements OnModuleInit {
       const target = new NewChatDto(newChat);
       const validationError = await validate(target);
       if (validationError.length > 0) throw new WsException(String(validationError));
-      Logger.log(`Request for new Chat from ${socket.id}`);
+      this.#logger.log(`Request for new Chat from ${socket.id}`);
       const chatId = await this.chatService.createChat(newChat);
-      Logger.log(`Chat ${chatId} is created`);
+      this.#logger.log(`Chat ${chatId} is created`);
       // socket.join(chatId);
       this.server.to(chatId).emit("new-chat", chatId); // Notifica a los demás participantes
       return { event: "new-chat", data: chatId };
@@ -53,7 +54,7 @@ export class ChatGateway implements OnModuleInit {
   async handleMessage(@MessageBody() message: ChatMessageDto, @ConnectedSocket() socket: Socket): Promise<WsResponse> {
     try {
       const validationError = await validate(new ChatMessageDto(message));
-      if (validationError.length > 0) throw new WsException(String(validationError));
+      if (validationError.length > 0) throw new WsException(JSON.stringify(validationError));
       const newMessage = await this.chatService.createMessage(message);
       const socketReceiver = this.chatService.getSocketByUserId(message.receiver);
       if (socketReceiver !== null) socket.to(message.chatId).to(socketReceiver.socketId).emit("chat-message", newMessage);
@@ -67,12 +68,26 @@ export class ChatGateway implements OnModuleInit {
   async getMessages(@MessageBody() payload: GetMessagesDto): Promise<WsResponse> {
     try {
       const validationError = await validate(new GetMessagesDto(payload));
-      if (validationError.length > 0) throw new WsException(String(validationError));
+      if (validationError.length > 0) throw new WsException(JSON.stringify(validationError));
       const messages = await this.chatService.getUserMessagesFromChat(payload);
       return { event: "get-messages", data: messages };
     } catch (error) {
-      Logger.error(error);
+      this.#logger.error(error);
       return { event: "get-messages", data: error };
+    }
+  }
+
+  @SubscribeMessage("mark-message")
+  async markMessage(@MessageBody() payload: MarkMessageDto): Promise<WsResponse> {
+    try {
+      const validationError = await validate(new MarkMessageDto(payload));
+      if (validationError.length > 0) throw new WsException(JSON.stringify(validationError));
+      if (payload.isRead !== undefined) await this.chatService.markMessageAsRead(payload.messageId);
+      if (payload.isStarred !== undefined) await this.chatService.markMessageAsStarred(payload.messageId);
+      return { data: "success", event: "mark-message" };
+    } catch (error) {
+      this.#logger.error(error);
+      return { data: error, event: "mark-message" };
     }
   }
 }

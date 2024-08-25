@@ -24,18 +24,20 @@ export class ChatService implements IChatService {
 
   public readonly onClientConnected = (client: Client): void => {
     this.#onlineSockets.set(client.userId, client);
-    this.#logger.log(`User ${client.userId} added to client map`);
+    this.#logger.debug(`[OnClientConnected]: User ${client.userId} added to client map`);
   };
 
   public readonly onClientDisconnected = (clientId: string): boolean => {
     const result = this.#onlineSockets.delete(clientId);
-    if (result) this.#logger.log(`User ${clientId} removed to client map`);
-    else this.#logger.warn(`User ${clientId} is not on the client map`);
+    if (result) this.#logger.debug(`[OnClientDisconnected]: User ${clientId} removed to client map`);
+    else this.#logger.warn(`[OnClientDisconnected]: User ${clientId} is not on the client map`);
     return result;
   };
 
   public readonly getSocketByUserId = (userId: string): Client | null => {
-    return this.#onlineSockets.get(userId) ?? null;
+    const socket = this.#onlineSockets.get(userId);
+    if (socket === undefined) this.#logger.warn(`[GetSocketByUserId]: User ${userId} is not on the client map`);
+    return socket ?? null;
   };
 
   public readonly authClientFromToken = async (token: string): Promise<JwtPayload> => {
@@ -127,10 +129,10 @@ export class ChatService implements IChatService {
     const name = "[GetUserMessagesFromChat]";
     let session: ClientSession | undefined;
     try {
-      this.#logger.log(name + ": Starting Session");
+      this.#logger.debug(name + ": Starting Session");
       session = await this.connection.startSession();
       session.startTransaction();
-      this.#logger.log(name + ": Transaction Started");
+      this.#logger.debug(name + ": Transaction Started");
 
       const filterQuery: FilterQuery<Message> = { isTrashed: false };
       if (filter === "starred") filterQuery.isStarred = true;
@@ -141,7 +143,7 @@ export class ChatService implements IChatService {
       const messagesIds = chat.messagesByUser.get(userId);
       if (messagesIds === undefined) throw new WsException(`User ${userId} does not belong to the chat`);
 
-      const pageSize = 10;
+      const pageSize = 5;
       let startIndex = cursor !== undefined ? messagesIds.indexOf(cursor) - pageSize : messagesIds.length - pageSize;
       if (startIndex < 0) startIndex = 0;
       const endIndex = cursor !== undefined ? messagesIds.indexOf(cursor) : messagesIds.length;
@@ -150,24 +152,23 @@ export class ChatService implements IChatService {
         .find({ _id: { $in: paginatedMessageIds }, ...filterQuery })
         .sort({ createdAt: -1 })
         .lean();
-
       // const nextCursor = messages.length > 0 ? messages[messages.length - 1]._id.toString() : "";
-      const nextCursor = paginatedMessageIds.length > 0 ? (paginatedMessageIds.at(-1) ?? "") : "";
+      const nextCursor = paginatedMessageIds.length > 0 ? paginatedMessageIds[0] : "";
 
       await session.commitTransaction();
-      this.#logger.debug(name + " Transaction commited");
+      this.#logger.debug(name + ": Transaction commited");
       return { messages, cursor: nextCursor };
     } catch (error) {
       await session?.abortTransaction();
       const context = `User ${userId} in chat ${chatId}`;
-      this.#logger.log(name + `: Transaction aborted`);
+      this.#logger.warn(name + `: Transaction aborted`);
       if (error instanceof Error) {
         this.#logger.error(name + `[${error.constructor.name}][${error.name}]: ${error.message} => ${context}`);
       }
       throw new WsException(`Something wrong when trying to search for messages from ${context}`);
     } finally {
       await session?.endSession();
-      this.#logger.log(name + `: Session finished`);
+      this.#logger.debug(name + `: Session finished`);
     }
   };
 
@@ -186,7 +187,7 @@ export class ChatService implements IChatService {
       const messageSaved = await newMessage.save();
       for (const messages of chat.messagesByUser.values()) messages.push(messageSaved.id);
       await chat.save();
-      this.#logger.debug(name + ` ${chat.id} updated`);
+      this.#logger.debug(name + `: ${chat.id} updated`);
 
       await session.commitTransaction();
       this.#logger.debug(name + ": Transaction commited");
@@ -240,22 +241,29 @@ export class ChatService implements IChatService {
 }
 
 /*
-  public readonly exec = async <T, R>(action: keyof IChatService, args: T): Promise<R> => {
+  public readonly exec = async <T extends Methods>(
+    action: Actions,
+    args: Parameters<T>[0]
+  ): Promise<ReturnType<T>> => {
     let session: ClientSession | undefined;
     try {
       session = await this.connection.startSession();
-      this.#logger.debug(`[${action}] Session created`);
+      this.#logger.debug(`[${action}]: Session created`);
       session.startTransaction();
-      this.#logger.debug(`[${action}] Transaction started`);
-      const result = await this[action](args as never);
+      this.#logger.debug(`[${action}]: Transaction started`);
+
+      const service = this.#getMethodService(action);
+      const result = await service(args as never)
+      return result as ReturnType<T>
+
       session.commitTransaction();
-      this.#logger.debug(`[${action}] Transaction commited`);
+      this.#logger.debug(`[${action}]: Transaction commited`);
       return result as R;
     } catch (error) {
       await session?.abortTransaction();
-      this.#logger.debug(`[${action}] Transaction aborted`);
-      if (error instanceof MongooseError) {
-        this.#logger.error(`[${action}] DatabaseError: ${error.message}`);
+      this.#logger.warn(`[${action}]: Transaction aborted`);
+      if (error instanceof Error) {
+        this.#logger.error(`[${action}][${error.constructor.name}][${error.name}]: ${error.message}`. Context ${String(args)});
         throw new HttpException("Something wrong, try again latter", 500);
       } else throw error;
     } finally {
