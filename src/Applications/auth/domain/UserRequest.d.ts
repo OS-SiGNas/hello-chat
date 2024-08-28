@@ -1,6 +1,6 @@
 import type { Request } from "express";
-import type { JwtPayload } from "./JwtPayload";
+import type { PayloadToken } from "./PayloadToken";
 
 export interface UserRequest extends Request {
-  user: JwtPayload;
+  user: PayloadToken;
 }

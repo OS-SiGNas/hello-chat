@@ -10,19 +10,20 @@ interface IConfig {
 }
 
 const Config = class implements IConfig {
-  readonly #logger = new Logger("Config");
-  readonly configModule: DynamicModule;
-  readonly #configService = new ConfigService();
-  private constructor() {
-    const envFilePath = process.env.NODE_ENV !== undefined ? `.env.${process.env.NODE_ENV}` : ".env";
-    this.#logger.debug("EnvTarget: " + envFilePath);
-    this.configModule = ConfigModule.forRoot({ isGlobal: true, envFilePath });
-  }
-
   static #instance?: IConfig; // crazy singleton 🤡
   static get instance(): Readonly<IConfig> {
     if (this.#instance === undefined) this.#instance = new Config();
     return this.#instance;
+  }
+
+  readonly #logger = new Logger("Config");
+  readonly configModule: DynamicModule;
+  readonly #configService = new ConfigService();
+
+  private constructor() {
+    const envFilePath = process.env.NODE_ENV !== undefined ? `.env.${process.env.NODE_ENV}` : ".env";
+    this.#logger.debug("EnvTarget: " + envFilePath);
+    this.configModule = ConfigModule.forRoot({ isGlobal: true, envFilePath });
   }
 
   readonly #error = (variable: Variables): Error => new Error(`💩 Environment Variable: ${variable} is undefined`);
@@ -48,4 +49,4 @@ const Config = class implements IConfig {
   };
 };
 
-export const { configModule, secrets, getAsyncSecrets } = Config.instance;
+export const { configModule, secrets, getAsyncSecrets }: IConfig = Config.instance;

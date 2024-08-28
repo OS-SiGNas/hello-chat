@@ -1,4 +1,4 @@
-import type { JwtPayload } from "../../auth/domain";
+import type { PayloadToken } from "../../auth/domain";
 import type { Rol } from "../../users/domain";
 
 import type { NewChatDto } from "./dto/new-chat.dto";
@@ -39,7 +39,7 @@ interface ChatService {
   onClientConnected: (client: Client) => void;
   onClientDisconnected: (clientId: string) => boolean;
   getSocketByUserId: (userId: string) => Client | null;
-  authClientFromToken: (token: string) => Promise<JwtPayload>;
+  authClientFromToken: (token: string) => Promise<PayloadToken>;
   createChat: CreateChat;
   createMessage: CreateMessage;
   addUserToChat: AddUserToChat;

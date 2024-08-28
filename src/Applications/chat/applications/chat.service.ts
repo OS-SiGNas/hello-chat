@@ -2,9 +2,10 @@ import { HttpException, Injectable, Logger } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
 import { JwtService } from "@nestjs/jwt";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
+
 import { ClientSession, Connection, FilterQuery, Model } from "mongoose";
 
-import { JwtPayload } from "../../auth/domain";
+import { PayloadToken } from "../../auth/domain";
 import { User } from "../../users/domain";
 
 import { Message, Chat, IChatService, AddUserToChat, Client, CreateChat, CreateMessage, DeleteChatMessages, GetUserMessagesFromChat } from "../domain";
@@ -40,9 +41,9 @@ export class ChatService implements IChatService {
     return socket ?? null;
   };
 
-  public readonly authClientFromToken = async (token: string): Promise<JwtPayload> => {
+  public readonly authClientFromToken = async (token: string): Promise<PayloadToken> => {
     if (token === undefined) throw new HttpException("Malformed auth request in socket", 400);
-    const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
+    const payload = await this.jwtService.verifyAsync<PayloadToken>(token);
     return payload;
   };
 
@@ -241,10 +242,7 @@ export class ChatService implements IChatService {
 }
 
 /*
-  public readonly exec = async <T extends Methods>(
-    action: Actions,
-    args: Parameters<T>[0]
-  ): Promise<ReturnType<T>> => {
+  public readonly exec = async <T extends Methods>( action: Actions, args: Parameters<T>[0]): Promise<ReturnType<T>> => {
     let session: ClientSession | undefined;
     try {
       session = await this.connection.startSession();

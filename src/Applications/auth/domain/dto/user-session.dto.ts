@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsDate, IsEmail, IsString } from "class-validator";
-import { Rol } from "../../../users/domain/IUser";
+import { Rol } from "../../../users/domain";
 
 interface Dependences {
   token: string;

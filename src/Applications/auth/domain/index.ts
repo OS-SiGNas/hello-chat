@@ -9,5 +9,5 @@ export * from "./dto/login.dto";
 export * from "./dto/register.dto";
 export * from "./dto/user-session.dto";
 
-export type * from "./JwtPayload";
+export type * from "./PayloadToken";
 export type * from "./UserRequest";

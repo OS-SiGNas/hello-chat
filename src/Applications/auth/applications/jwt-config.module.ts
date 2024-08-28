@@ -1,5 +1,5 @@
 import { JwtModule } from "@nestjs/jwt";
-import { secrets } from "../../../Domain/config";
+import { secrets } from "../../../Domain/config-module";
 
 export const JwtConfigModule = JwtModule.register({
   global: true,

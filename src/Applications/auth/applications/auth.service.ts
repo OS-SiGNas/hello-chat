@@ -12,9 +12,9 @@ import { ChangePasswordDto, LoginDto, PasswordResetCache, RegisterDto, UserSessi
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly jwtService: JwtService,
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(PasswordResetCache.name) private readonly passwordResetModel: Model<PasswordResetCache>,
-    private readonly jwtService: JwtService,
   ) {}
 
   public readonly login = async ({ email, password }: LoginDto): Promise<UserSessionDto | null> => {
@@ -23,7 +23,6 @@ export class AuthService {
     if (user.isActive === false) throw new HttpException("Inactive Account", 403);
     const isMatch = await comparePassword(password, user.password);
     if (isMatch === false) return null;
-
     return new UserSessionDto({
       token: this.jwtService.sign({ id: user.id, rol: user.rol }),
       id: user.id,

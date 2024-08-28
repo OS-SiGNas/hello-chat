@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpException, Param, Patch, Post } from "@nestj
 import { RateLimit } from "nestjs-rate-limit";
 
 import { ActivateAccountDto, ChangePasswordDto, ForgotPasswordDto, LoginDto, RegisterDto, UserSessionDto } from "../domain";
-import { AuthService } from "../applications/auth.service";
+import { AuthService } from "../applications";
 
 @Controller("auth")
 export class AuthController {
@@ -39,7 +39,6 @@ export class AuthController {
   async forgotPassword(@Body() { email }: ForgotPasswordDto): Promise<object> {
     const verificationString = await this.authService.forgotPassword(email);
     if (verificationString === null) throw new HttpException(`User ${email} not found`, 404);
-
     return { verificationString }; // TODO: response only status code
   }
 
