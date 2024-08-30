@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsEmail, IsString } from "class-validator";
-import { Rol } from "../IUser";
+import { IsNotEmpty, IsEmail, IsString, IsArray, ArrayNotEmpty, IsIn } from "class-validator";
+import { Roles, rolesArray } from "../Roles";
 
 export class CreateUserDto {
   @IsString()
@@ -14,5 +14,9 @@ export class CreateUserDto {
   password: string;
 
   @IsNotEmpty()
-  rol: Rol;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  @IsIn(rolesArray, { each: true })
+  roles: Roles[];
 }

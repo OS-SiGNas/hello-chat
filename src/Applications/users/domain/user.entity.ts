@@ -1,7 +1,8 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Schema as SchemaMongoose, HydratedDocument } from "mongoose";
 
-import { IUser, Rol } from "./IUser";
+import type { Roles } from "./Roles";
+import type { IUser } from "./IUser";
 
 @Schema()
 export class User implements IUser {
@@ -14,8 +15,8 @@ export class User implements IUser {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true })
-  rol: Rol;
+  @Prop({ required: true, type: Array })
+  roles: Roles[];
 
   @Prop({ required: true })
   isActive: boolean;

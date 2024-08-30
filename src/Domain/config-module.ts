@@ -1,6 +1,7 @@
 import { DynamicModule, Logger } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
+export type Environment = "development" | "production" | "test";
 export type Variables = "PORT" | "MONGO_URI" | "JWT_SECRET" | "JWT_EXPIRED_TIME";
 export type Secrets = Readonly<Record<Variables, string>>;
 interface IConfig {
@@ -17,13 +18,15 @@ const Config = class implements IConfig {
   }
 
   readonly #logger = new Logger("Config");
+  readonly #environment: Environment | undefined;
   readonly configModule: DynamicModule;
   readonly #configService = new ConfigService();
 
   private constructor() {
-    const envFilePath = process.env.NODE_ENV !== undefined ? `.env.${process.env.NODE_ENV}` : ".env";
+    this.#environment = process.env.NODE_ENV as Environment;
+    const envFilePath = this.#environment !== undefined ? `.env.${this.#environment}` : ".env";
     this.#logger.debug("EnvTarget: " + envFilePath);
-    this.configModule = ConfigModule.forRoot({ isGlobal: true, envFilePath });
+    this.configModule = ConfigModule.forRoot({ envFilePath });
   }
 
   readonly #error = (variable: Variables): Error => new Error(`💩 Environment Variable: ${variable} is undefined`);
@@ -49,4 +52,5 @@ const Config = class implements IConfig {
   };
 };
 
-export const { configModule, secrets, getAsyncSecrets }: IConfig = Config.instance;
+// export const { configModule, secrets, getAsyncSecrets }: IConfig = Config.instance;
+export const { configModule, getAsyncSecrets, secrets }: IConfig = Config.instance;

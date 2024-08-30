@@ -5,4 +5,5 @@ export * from "./user.mongoose-module";
 export * from "./dto/create-user.dto";
 export * from "./dto/update-user.dto";
 
+export * from "./Roles";
 export type * from "./IUser";

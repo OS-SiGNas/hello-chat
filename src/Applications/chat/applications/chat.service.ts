@@ -2,7 +2,6 @@ import { HttpException, Injectable, Logger } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
 import { JwtService } from "@nestjs/jwt";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
-
 import { ClientSession, Connection, FilterQuery, Model } from "mongoose";
 
 import { PayloadToken } from "../../auth/domain";

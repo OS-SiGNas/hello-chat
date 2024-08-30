@@ -1,46 +1,34 @@
-import { IsNotEmpty, IsDate, IsEmail, IsString } from "class-validator";
-import { Rol } from "../../../users/domain";
+import { Roles } from "../../../users/domain";
 
 interface Dependences {
   token: string;
   id: string;
   name: string;
   email: string;
-  rol: Rol;
+  roles: Roles[];
   createAt: Date;
+  contacts: string[];
+  chats: string[];
 }
 
 export class UserSessionDto {
-  @IsNotEmpty()
-  @IsString()
   token: string;
-
-  @IsNotEmpty()
-  @IsEmail()
   email: string;
-
-  @IsNotEmpty()
-  @IsEmail()
   id: string;
-
-  @IsNotEmpty()
-  @IsString()
   name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  rol: Rol;
-
-  @IsNotEmpty()
-  @IsDate()
+  roles: Roles[];
   createdAt: Date;
+  chats: string[];
+  contacts: string[];
 
   constructor(d: Readonly<Dependences>) {
     this.token = d.token;
     this.name = d.name;
     this.id = d.id;
     this.email = d.email;
-    this.rol = d.rol;
+    this.roles = d.roles;
     this.createdAt = d.createAt;
+    this.chats = d.chats;
+    this.contacts = d.contacts;
   }
 }

@@ -1,5 +1,5 @@
 import { CustomDecorator, SetMetadata } from "@nestjs/common";
-import { Rol } from "src/Applications/users/domain";
+import { Roles } from "../../../users/domain";
 
 export const accessKeys = {
   IS_PUBLIC: Symbol(),
@@ -7,4 +7,4 @@ export const accessKeys = {
 } as const;
 
 export const Public = (): CustomDecorator<symbol> => SetMetadata(accessKeys.IS_PUBLIC, true);
-export const Protected = (rol: Rol): CustomDecorator<symbol> => SetMetadata(accessKeys.IS_PROTECTED, rol);
+export const Protected = (role: Roles): CustomDecorator<symbol> => SetMetadata(accessKeys.IS_PROTECTED, role);

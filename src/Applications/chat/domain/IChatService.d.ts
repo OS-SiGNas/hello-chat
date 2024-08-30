@@ -1,5 +1,5 @@
 import type { PayloadToken } from "../../auth/domain";
-import type { Rol } from "../../users/domain";
+import type { Roles } from "../../users/domain";
 
 import type { NewChatDto } from "./dto/new-chat.dto";
 import type { ChatMessageDto } from "./dto/chat-message.dto";
@@ -8,7 +8,7 @@ import type { Message } from "./message.entity";
 export interface Client {
   userId: string;
   socketId: string;
-  rol: Rol;
+  roles: Roles;
 }
 
 export type CreateChat = (args: NewChatDto) => Promise<string>;

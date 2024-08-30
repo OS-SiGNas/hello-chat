@@ -24,12 +24,14 @@ export class AuthService {
     const isMatch = await comparePassword(password, user.password);
     if (isMatch === false) return null;
     return new UserSessionDto({
-      token: this.jwtService.sign({ id: user.id, rol: user.rol }),
+      token: this.jwtService.sign({ id: user.id, roles: user.roles }),
       id: user.id,
       name: user.name,
       email: user.email,
-      rol: user.rol,
+      roles: user.roles,
       createAt: user.createdAt,
+      chats: user.chats,
+      contacts: user.contacts,
     });
   };
 

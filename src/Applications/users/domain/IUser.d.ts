@@ -1,9 +1,12 @@
-export type Rol = "admin" | "standard" | "moderator" | "tester" | "null";
+import type { Roles } from "./Roles";
+
 export interface IUser {
   name: string;
   email: string;
   password: string;
-  rol: Rol;
+  roles: Roles[];
   isActive: boolean;
   createdAt: Date;
+  chats: string[];
+  contacts: string[];
 }

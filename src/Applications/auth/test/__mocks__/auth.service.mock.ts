@@ -14,8 +14,10 @@ export const mockAuthService = {
       id: "",
       email: user.email,
       name: user.name,
-      rol: user.rol,
+      roles: user.roles,
       createAt: user.createdAt,
+      chats: user.chats,
+      contacts: user.contacts,
     });
   }),
 
@@ -28,7 +30,7 @@ export const mockAuthService = {
       isActive: false,
       name: register.name,
       password: register.password,
-      rol: "standard",
+      roles: ["standard"],
       activationToken: "activationToken123",
     };
     mockUsersDb.push(user);

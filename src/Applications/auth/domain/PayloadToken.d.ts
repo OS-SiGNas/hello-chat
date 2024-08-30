@@ -1,6 +1,6 @@
-import { Rol } from "../../users/domain";
+import type { Roles } from "../../users/domain";
 
 export interface PayloadToken {
   id: string;
-  rol: Rol;
+  roles: Roles;
 }

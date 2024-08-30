@@ -34,8 +34,10 @@ describe("AuthController", () => {
       createdAt: expect.any(Date),
       email: loginDto.email,
       name: expect.any(String),
-      rol: expect.any(String),
+      roles: expect.any(Array),
       token: expect.any(String),
+      chats: expect.any(Array),
+      contacts: expect.any(Array),
     });
 
     expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);

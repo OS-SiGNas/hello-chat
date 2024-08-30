@@ -1,5 +1,4 @@
 import { Body, Controller, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
-import { RateLimit } from "nestjs-rate-limit";
 
 import { ActivateAccountDto, ChangePasswordDto, ForgotPasswordDto, LoginDto, RegisterDto, UserSessionDto } from "../domain";
 import { AuthService } from "../applications";
@@ -7,11 +6,6 @@ import { AuthService } from "../applications";
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Get("test/:str")
-  async test(@Param("str") str: string): Promise<string> {
-    return `el str: ${str}`;
-  }
 
   @Post("login")
   async login(@Body() loginDto: LoginDto): Promise<UserSessionDto> {
@@ -35,7 +29,6 @@ export class AuthController {
   }
 
   @Post("forgot-password")
-  @RateLimit({ keyPrefix: "forgot-password", points: 3, duration: 15 * 60, blockDuration: 30 * 60 })
   async forgotPassword(@Body() { email }: ForgotPasswordDto): Promise<object> {
     const verificationString = await this.authService.forgotPassword(email);
     if (verificationString === null) throw new HttpException(`User ${email} not found`, 404);

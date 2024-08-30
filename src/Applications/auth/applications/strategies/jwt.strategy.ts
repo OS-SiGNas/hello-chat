@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({ jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: secrets.JWT_SECRET, ignoreExpiration: false });
   }
 
-  public readonly validate = async ({ id, rol }: PayloadToken): Promise<PayloadToken> => {
-    return { id, rol } as const;
+  public readonly validate = async ({ id, roles }: PayloadToken): Promise<PayloadToken> => {
+    return { id, roles } as const;
   };
 }

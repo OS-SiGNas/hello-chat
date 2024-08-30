@@ -3,7 +3,7 @@ import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default [
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
+  { files: ["**/*.{ts,mts,cts}"], ignores: ["./node_modules", "./dist"] },
   {
     rules: {
       "@typescript-eslint/interface-name-prefix": "off",

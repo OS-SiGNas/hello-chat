@@ -4,7 +4,7 @@ import { Server, Socket } from "socket.io";
 import { validate } from "class-validator";
 
 import { ChatService } from "../applications";
-import { ChatMessageDto, NewChatDto, GetMessagesDto } from "../domain/";
+import { ChatMessageDto, NewChatDto, GetMessagesDto } from "../domain";
 import { MarkMessageDto } from "../domain/dto/mark-message.dto";
 
 @WebSocketGateway({ cors: true })
@@ -19,7 +19,7 @@ export class ChatGateway implements OnModuleInit {
       try {
         const token = socket.handshake?.auth?.token ?? socket.handshake?.headers?.token ?? "";
         const tokenInfo = await this.chatService.authClientFromToken(token);
-        this.chatService.onClientConnected({ socketId: socket.id, userId: tokenInfo.id, rol: tokenInfo.rol });
+        this.chatService.onClientConnected({ socketId: socket.id, userId: tokenInfo.id, roles: tokenInfo.roles });
         this.#logger.log(`Client ${tokenInfo.id} is connected `);
 
         socket.on("disconnect", () => {

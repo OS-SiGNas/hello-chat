@@ -1,5 +1,5 @@
 import { User, UserDocument } from "../../../users/domain";
-import { mockUsersDb } from "../__mocks__/usersDb.mock";
+import { mockUsersDb } from "./usersDb.mock";
 import { encryptPassword } from "../../applications";
 
 export const mockUserModel = {
